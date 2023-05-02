@@ -32,9 +32,9 @@ const TodoList = () => {
 
     const getTodos = async () => {
         // Firestore 쿼리를 만듭니다.
-        const q = query(todoCollection);
-        // const q = qurety(collection(db, "todos"), where("user", "==", user.uid));
-        // const q = query(todoCollection, orderBy("datetime", "desc"));
+        // const q = query(todoCollection);
+        // const q = qurey(collection(db, "todos"), where("user", "==", user.uid));
+        const q = query(todoCollection, orderBy("due"));
 
         // Firestore에서 할 일 목록을 조회합니다.
         const results = await getDocs(q);
@@ -76,6 +76,7 @@ const TodoList = () => {
         
         // id 값을 Firestore에 저장한 값으로 지정합니다.
         setTodos([...todos, { id: docRef.id, text: input, due: dueDate, completed: false }]);
+        getTodos();
         setInput("");
         setDueDate("");
     };
@@ -101,82 +102,66 @@ const TodoList = () => {
     // deleteTodo 함수는 할 일을 목록에서 삭제하는 함수입니다.
     const deleteTodo = (id) => {
         // Firestore에서 해당 id를 가진 할 일을 삭제합니다.
-        const todoDoc = doc(todoCollection.id);
-        deleteDoc(todoDoc);
+        const todoDoc = doc(todoCollection, id);
+        deleteDoc(todoDoc)
+        .then(() => {
+            console.log('Document successfully deleted!');
+        })
+        .catch((error) => {
+            console.error('Error deleting document: ', error);
+        });
 
         // 해당 id를 가진 할 일을 제외한 나머지 목록을 새로운 상태로 저장합니다.
-        // setTodos(todos.filter((todo) => todo.id !== id));
-        setTodos(
-            todos.filter((todo) => {
-                return todo.id !== id;
-            })
-        );
+        setTodos(todos.filter((todo) => todo.id !== id));
     };
 
-  // 컴포넌트를 렌더링합니다.
-  return (
-    <div className={styles.container}>
-      <h1 className="decoration-wavy text-xl mb-4 font-bold underline underline-offset-4 decoration-indigo-500">
-        Todo List
-      </h1>
-      {/* 할 일을 입력받는 텍스트 필드입니다. */}
-      <input
-        type="text"
-        // className={styles.itemInput}
-        // -- itemInput CSS code --
-        // input[type="text"].itemInput {
-        //   width: 100%;
-        //   padding: 5px;
-        //   margin-bottom: 10px;
-        // }
-        className="shadow-lg w-full p-1 mb-4 border border-gray-300 rounded"
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-      />
-      {/* 할 일을 추가하는 버튼입니다. */}
-      <div classname="flex justify-between">
-        {/* 종료일자를 입력받는 텍스트 필드입니다. */}
-        <input 
-                type="date" 
-                className={styles.dateInput}
-                value={dueDate}
-                onChange={(e) => setDueDate(e.target.value)}
-        />
-        <button
-          // className={styles.addButton}
-          // -- addButton CSS code --
-          // button.addButton {
-          //   padding: 5px;
-          //   background-color: #0070f3;
-          //   color: white;
-          //   border: 1px solid #0070f3;
-          //   border-radius: 5px;
-          //   cursor: pointer;
-          // }
-          //
-          // button.addButton:hover {
-          //   background-color: #fff;
-          //   color: #0070f3;
-          // }
-          className="rounded-full w-32 justify-self-end p-1 mb-4 ring ring-indigo-500 ring-offset-2 text-indigo-500 hover:bg-indigo-500 hover:text-white"
-          onClick={addTodo}
-        >
-          Add Todo
-        </button>
-      </div>
-      {/* 할 일 목록을 렌더링합니다. */}
-      <ul>
-        {todos.map((todo) => (
-          <TodoItem
-            key={todo.id}
-            todo={todo}
-            onToggle={() => toggleTodo(todo.id)}
-            onDelete={() => deleteTodo(todo.id)}
-          />
-        ))}
-      </ul>
-    </div>
-  );
+    // 컴포넌트를 렌더링합니다.
+    return (
+        <div className={styles.container}>
+            <h1 className="decoration-wavy text-xl mb-4 font-bold underline underline-offset-4 decoration-indigo-500">
+                Todo List
+            </h1>
+            <div className="flex">
+                {/* 종료일자를 입력받는 텍스트 필드입니다. */}
+                <input 
+                    type="date" 
+                    className="shadow-lg flex-none w-30 p-1 mb-4 border border-gray-300 rounded text-sm"
+                    value={dueDate}
+                    onChange={(e) => setDueDate(e.target.value)}
+                />
+
+                {/* 할 일을 입력받는 텍스트 필드입니다. */}
+                <input
+                    type="text"
+                    className="shadow-lg ml-2 p-1 grow mb-4 border border-gray-300 rounded"
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                />
+            </div>
+
+            <div className="flex justify-end">
+                {/* 할 일을 추가하는 버튼입니다. */}
+                <button
+                    className="rounded-full mb-5 w-32 ring ring-indigo-500 ring-offset-2 text-indigo-500 hover:bg-indigo-500 hover:text-white"
+                    onClick={addTodo}
+                >
+                    Add Todo
+                </button>
+            </div>
+
+            {/* 할 일 목록을 렌더링합니다. */}
+            <ul>
+                {todos.map((todo) => (
+                    <TodoItem
+                        key={todo.id}
+                        todo={todo}
+                        onToggle={() => toggleTodo(todo.id)}
+                        onDelete={() => deleteTodo(todo.id)}
+                    />
+                ))}
+            </ul>
+        </div>
+    );
 };
 
 export default TodoList;
