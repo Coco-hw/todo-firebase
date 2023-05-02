@@ -134,7 +134,7 @@ const TodoList = () => {
         onChange={(e) => setInput(e.target.value)}
       />
       {/* 할 일을 추가하는 버튼입니다. */}
-      <div>
+      <div classname="flex justify-between">
         {/* 종료일자를 입력받는 텍스트 필드입니다. */}
         <input 
                 type="date" 
