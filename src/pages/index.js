@@ -1,6 +1,6 @@
 import React from "react";
 import { useRouter } from "next/router";
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 
 import TodoList from "../components/TodoList";
 
@@ -16,6 +16,14 @@ export default function Home() {
   return (
     <div>
       <TodoList />
+      <div className="flex justify-center">
+        <button 
+        class="logoutButton"
+        onClick={() => signOut()}
+        >
+          Sign out
+        </button>
+      </div>
     </div>
   );
 }

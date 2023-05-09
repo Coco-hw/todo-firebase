@@ -28,3 +28,11 @@ li {
   display: flex;
   align-items: center;
 }
+
+button.logoutButton {
+  width: 100px;
+  margin: 10px auto;
+}
+button.logoutButton:hover {
+  text-decoration: underline;
+}
